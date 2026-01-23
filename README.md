@@ -1,6 +1,6 @@
 # 📕 Pokédex – SwiftUI + PokéAPI
 
-Pokédex desarrollada en **SwiftUI**, consumiendo datos en tiempo real desde la **PokéAPI**, con una interfaz inspirada visualmente en la Pokédex del anime y los juegos clásicos.
+Desarrollada en **SwiftUI**, consumiendo datos en tiempo real desde la **PokéAPI**, con una interfaz inspirada visualmente en la Pokédex del anime y los juegos clásicos.
 
 El proyecto está en desarrollo activo y prioriza una arquitectura clara, reutilizable y una experiencia visual cuidada.
 

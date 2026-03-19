@@ -16,15 +16,15 @@ struct PokemonStatsView: View {
 
                 // ===== STATS BASE (ANCLADAS) =====
                 statsSection
-                    .padding(.top, 110)     // 🔒 alineado con la línea negra
-                    .padding(.horizontal, 24)
+                    .padding(.top, 150)
+                    .padding(.horizontal, 18)
 
                 Spacer(minLength: 40)
 
                 // ===== DEBILIDADES =====
                 ChipSection(
                     title: "DEBILIDADES",
-                    titleColor: .red.opacity(0.85),
+                    titleColor: .red,
                     items: weaknesses,
                     animate: animateStats
                 )
@@ -53,8 +53,14 @@ struct PokemonStatsView: View {
         VStack(spacing: 14) {
 
             Text("STATS BASE")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundColor(.black)
+                .font(DSTypography.statsTitle)
+                .foregroundColor(DSColors.textPrimary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(DSColors.glassStrong.opacity(0.72))
+                )
 
             ForEach(Array(pokemon.stats.enumerated()), id: \.element.stat.name) { index, stat in
                 StatRow(
@@ -65,6 +71,16 @@ struct PokemonStatsView: View {
                 )
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(DSColors.glassMedium.opacity(0.95))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(DSColors.glassBorderSoft.opacity(1.0), lineWidth: 1)
+                )
+        )
     }
 
     // MARK: - Helpers

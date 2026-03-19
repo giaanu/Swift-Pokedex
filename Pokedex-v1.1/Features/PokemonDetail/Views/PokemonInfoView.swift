@@ -16,12 +16,10 @@ struct PokemonInfoView: View {
 
                 // 🟨 PANTALLA BLANCA (zona fija)
                 VStack(spacing: 12) {
-                    
                     if let urlString =
                         pokemon.sprites.other?.officialArtwork?.front_default
                         ?? pokemon.sprites.front_default,
                        let url = URL(string: urlString) {
-                        
                         AsyncImage(url: url) { image in
                             image
                                 .resizable()
@@ -29,20 +27,24 @@ struct PokemonInfoView: View {
                         } placeholder: {
                             ProgressView()
                         }
-                        .frame(height: 160) // ✅ nunca sale del blanco
-                        
-                        Text("#\(pokemon.id)")
-                            .foregroundColor(.black)
-
-                        Text(pokemon.name.capitalized)
-                            .font(.title.bold())
-                            .foregroundColor(.black)
-
+                        .frame(height: 160)
+                    } else {
+                        Image(systemName: "photo")
+                            .font(.system(size: 42, weight: .medium))
+                            .foregroundColor(.gray)
+                            .frame(height: 160)
                     }
+
+                    Text("#\(pokemon.id)")
+                        .foregroundColor(.black)
+
+                    Text(pokemon.name.capitalized)
+                        .font(.title.bold())
+                        .foregroundColor(.black)
                 }
-                .frame(height: 400)       // 🔒 altura REAL del rectángulo blanco
+                .frame(height: 400)
                 .frame(maxWidth: .infinity)
-                .padding(.top, 155)       // 🔒 posición exacta del blanco
+                .padding(.top, 155)
 
                 Spacer()
 
@@ -54,11 +56,10 @@ struct PokemonInfoView: View {
                         }
                     }
                 }
-                .frame(height: 130)        // 🔒 altura REAL del verde
+                .frame(height: 130)
                 .frame(maxWidth: .infinity)
-                .padding(.bottom, 135)    // 🔒 posición exacta del verde
+                .padding(.bottom, 135)
             }
         }
     }
 }
-

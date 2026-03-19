@@ -29,20 +29,8 @@ class PokemonViewModel: ObservableObject {
             return
         }
         
-        guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon/\(safeName)") else {
-            errorMessage = "URL inválida"
-            isLoading = false
-            return
-        }
-        
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            
-            // OPCIONAL: ver respuesta cruda para debug
-            // print(String(data: data, encoding: .utf8)!)
-            
-            pokemon = try JSONDecoder().decode(Pokemon.self, from: data)
-            
+            pokemon = try await PokemonRepository.shared.pokemon(name: safeName)
         } catch {
             print("ERROR →", error)
             errorMessage = "No se pudo cargar el Pokémon"

@@ -20,19 +20,22 @@ struct PokemonGridCard: View {
             }
 
             Text(pokemon.name.capitalized)
-                .font(.footnote.bold())
-                .foregroundColor(.black)
+                .font(DSTypography.cardTitle)
+                .foregroundColor(DSColors.textPrimary)
                 .lineLimit(1)
         }
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.25))
+                .fill(DSColors.glassMedium.opacity(1.0))
         )
     }
 
     private var pokemonImageURL: URL? {
         if let url = pokemon.sprites.other?.officialArtwork?.front_default {
+            return URL(string: url)
+        }
+        if let url = pokemon.sprites.front_default {
             return URL(string: url)
         }
         return nil

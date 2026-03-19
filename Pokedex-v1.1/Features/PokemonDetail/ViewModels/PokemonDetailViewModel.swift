@@ -8,6 +8,7 @@ final class PokemonDetailViewModel: ObservableObject {
     @Published var weaknesses: [String] = []
     @Published var resistances: [String] = []
     @Published var isLoading = false
+    private static var typeRelationsCache: [String: DamageRelations] = [:]
 
     func loadDamageRelations(for pokemon: Pokemon) async {
         isLoading = true
@@ -28,9 +29,15 @@ final class PokemonDetailViewModel: ObservableObject {
         var results: [DamageRelations] = []
 
         for entry in types {
+            if let cached = Self.typeRelationsCache[entry.type.url] {
+                results.append(cached)
+                continue
+            }
+
             guard let url = URL(string: entry.type.url) else { continue }
             let (data, _) = try await URLSession.shared.data(from: url)
             let decoded = try JSONDecoder().decode(TypeResponse.self, from: data)
+            Self.typeRelationsCache[entry.type.url] = decoded.damage_relations
             results.append(decoded.damage_relations)
         }
 

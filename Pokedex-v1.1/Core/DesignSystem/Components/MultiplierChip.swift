@@ -4,7 +4,7 @@ struct MultiplierChip: View {
     let type: String
 
     var body: some View {
-        Text(type.capitalized)
+        Text(PokemonDisplayText.localizedType(type))
             .font(.system(size: 14, weight: .semibold))
             .foregroundColor(.white)
             .padding(.horizontal, 14)

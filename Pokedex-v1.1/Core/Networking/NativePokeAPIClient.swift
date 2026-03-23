@@ -39,6 +39,10 @@ struct NativePokeAPIClient: PokeAPIClient {
         try await decode(EvolutionChainResponse.self, from: url)
     }
 
+    func fetchType(url: URL) async throws -> TypeResponse {
+        try await decode(TypeResponse.self, from: url)
+    }
+
     private func decode<T: Decodable>(_ type: T.Type, from url: URL) async throws -> T {
         let (data, _) = try await URLSession.shared.data(from: url)
         return try JSONDecoder().decode(T.self, from: data)

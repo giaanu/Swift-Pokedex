@@ -10,7 +10,7 @@ struct StatsBasePanel: View {
             Spacer()
                 .frame(height: 40)
 
-            Text("STATS BASE")
+            Text("ESTADÍSTICAS BASE")
                 .font(.title2.bold())
                 .foregroundColor(.black)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -28,14 +28,6 @@ struct StatsBasePanel: View {
         .frame(maxWidth: .infinity)
     }
     private func statName(_ raw: String) -> String {
-        switch raw {
-        case "hp": return "HP"
-        case "attack": return "ATK"
-        case "defense": return "DEF"
-        case "special-attack": return "SP. ATK"
-        case "special-defense": return "SP. DEF"
-        case "speed": return "SPD"
-        default: return raw.uppercased()
-        }
+        PokemonDisplayText.localizedStat(raw)
     }
 }

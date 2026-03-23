@@ -5,45 +5,57 @@ import Combine
 @MainActor
 final class PokemonDetailViewModel: ObservableObject {
 
+    @Published var pokemon: Pokemon?
     @Published var weaknesses: [String] = []
     @Published var resistances: [String] = []
     @Published var isLoading = false
     @Published var supplementalData: PokemonSupplementalData?
-    @Published var isLoadingSupplemental = false
-    private static var typeRelationsCache: [String: DamageRelations] = [:]
 
-    func loadDamageRelations(for pokemon: Pokemon) async {
+    func loadDetails(for basePokemon: Pokemon) async {
         isLoading = true
         weaknesses.removeAll()
         resistances.removeAll()
+        supplementalData = nil
 
         do {
-            let relations = try await fetchDamageRelations(for: pokemon.types)
-            process(relations: relations)
+            let resolvedPokemon = try await resolvedPokemon(from: basePokemon)
+            pokemon = resolvedPokemon
+
+            async let relations = PokemonRepository.shared.damageRelations(for: resolvedPokemon)
+            async let supplemental = PokemonRepository.shared.supplementalData(for: resolvedPokemon)
+
+            let damageRelations = try await relations
+            let loadedSupplemental = try await supplemental
+
+            supplementalData = loadedSupplemental
+            process(relations: damageRelations)
+
+            Task(priority: .utility) {
+                await PokemonRepository.shared.prefetchAdjacentDetails(around: resolvedPokemon.id)
+            }
         } catch {
-            print("❌ Error damage relations:", error)
+            print("❌ Error loading pokemon detail:", error)
+            pokemon = basePokemon
         }
 
         isLoading = false
     }
 
-    private func fetchDamageRelations(for types: [PokemonTypeEntry]) async throws -> [DamageRelations] {
-        var results: [DamageRelations] = []
-
-        for entry in types {
-            if let cached = Self.typeRelationsCache[entry.type.url] {
-                results.append(cached)
-                continue
-            }
-
-            guard let url = URL(string: entry.type.url) else { continue }
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let decoded = try JSONDecoder().decode(TypeResponse.self, from: data)
-            Self.typeRelationsCache[entry.type.url] = decoded.damage_relations
-            results.append(decoded.damage_relations)
+    private func resolvedPokemon(from basePokemon: Pokemon) async throws -> Pokemon {
+        if Self.shouldLoadFullPokemon(basePokemon) {
+            return try await PokemonRepository.shared.pokemon(id: basePokemon.id)
         }
 
-        return results
+        return basePokemon
+    }
+
+    private static func shouldLoadFullPokemon(_ pokemon: Pokemon) -> Bool {
+        if pokemon.types.isEmpty || pokemon.stats.isEmpty {
+            return true
+        }
+
+        let artwork = pokemon.sprites.other?.officialArtwork?.front_default
+        return artwork == nil && pokemon.sprites.front_default == nil
     }
 
     private func process(relations: [DamageRelations]) {
@@ -65,34 +77,4 @@ final class PokemonDetailViewModel: ObservableObject {
         weaknesses = Array(weak).sorted()
         resistances = Array(resist).sorted()
     }
-
-    func loadSupplementalData(for pokemon: Pokemon) async {
-        isLoadingSupplemental = true
-        supplementalData = nil
-
-        do {
-            supplementalData = try await PokemonRepository.shared.supplementalData(for: pokemon)
-        } catch {
-            print("❌ Error supplemental data:", error)
-        }
-
-        isLoadingSupplemental = false
-    }
-}
-
-// MARK: - Models PokéAPI
-
-struct TypeResponse: Decodable {
-    let damage_relations: DamageRelations
-}
-
-struct DamageRelations: Decodable {
-    let double_damage_from: [NamedAPIResource]
-    let half_damage_from: [NamedAPIResource]
-    let no_damage_from: [NamedAPIResource]
-}
-
-struct NamedAPIResource: Decodable {
-    let name: String
-    let url: String
 }

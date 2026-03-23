@@ -12,7 +12,7 @@ struct ImmunitiesView: View {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 90))], spacing: 8) {
                 ForEach(types, id: \.self) { type in
                     HStack(spacing: 4) {
-                        Text(type.capitalized)
+                        Text(PokemonDisplayText.localizedType(type))
                         Text("x0")
                     }
                     .font(.caption.bold())

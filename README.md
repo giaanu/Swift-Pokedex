@@ -1,139 +1,117 @@
-# 📕 Pokédex – SwiftUI + PokéAPI
+# Swift Pokédex
 
-Desarrollada en **SwiftUI**, consumiendo datos en tiempo real desde la **PokéAPI**, con una interfaz inspirada visualmente en la Pokédex del anime y los juegos clásicos.
+Pokédex para iOS construida con **SwiftUI**, conectada a **PokeAPI**, diseñada como una base sólida para evolucionar hacia una enciclopedia Pokémon más completa.
 
-El proyecto está en desarrollo activo y prioriza una arquitectura clara, reutilizable y una experiencia visual cuidada.
+La app ya permite explorar regiones, buscar Pokémon, abrir fichas detalladas, consultar evolución, shiny y formas especiales, además de recorrer gimnasios por región.
 
----
+## Qué ofrece hoy
 
-## 🚀 Funcionalidades actuales
+- exploración de la Pokédex nacional organizada por regiones,
+- búsqueda global por nombre o número,
+- fichas detalladas con arte oficial, tipos, estadísticas, debilidades y resistencias,
+- descripción Pokédex en español cuando está disponible,
+- cadena evolutiva navegable,
+- soporte para shiny, Mega Evolución y Gigantamax,
+- navegación por gestos entre Pokémon,
+- sección de gimnasios con líderes, especialidades, insignias y equipos,
+- interfaz localizada al español,
+- mejoras de performance con caché y precarga de detalle.
 
-### 🗺️ Navegación por regiones
-- Lista inicial con **tarjetas de regiones Pokémon**.
-- Cada región contiene los Pokémon correspondientes según su rango de Pokédex.
-- Diseño con **estética Pokédex**, fondo personalizado y scroll recortado alineado a la interfaz.
+## Stack
 
-### 🧩 Listado de Pokémon por región
-- Grid con **3 Pokémon por fila**.
-- Cada tarjeta muestra:
-  - Imagen oficial
-  - Nombre
-- Carga dinámica desde PokéAPI.
-- Scroll optimizado para integrarse visualmente con el fondo.
+- `Swift`
+- `SwiftUI`
+- `Combine`
+- `PokeAPI v2`
+- `Xcode`
 
-### 🔍 Búsqueda de Pokémon
-- Búsqueda por **nombre o número**.
-- Normalización del input del usuario.
-- Resultados en tiempo real desde la API.
+## Captura general del proyecto
 
-### 📄 Detalle del Pokémon
-Vista dividida en **dos pantallas deslizables**:
+La app está pensada con dos objetivos:
 
-#### 📸 Información general
-- Imagen oficial
-- Nombre
-- Número
-- Tipos (con colores reales)
+1. ofrecer una experiencia visual cuidada tipo Pokédex moderna,
+2. mantener una base técnica lo suficientemente limpia como para crecer hacia una enciclopedia más ambiciosa.
 
-#### 📊 Estadísticas y combate
-- Stats base animadas (HP, Ataque, Defensa, etc.)
-- Debilidades
-- Resistencias
-- Visualización clara y alineada con el fondo Pokédex
-- Chips dinámicos y animados
+Por eso la UI no depende directamente de la API: el acceso a datos pasa por una capa de repositorio y un cliente desacoplado.
 
-### 🔙 Navegación
-- Botón de volver visible y funcional en todas las pantallas
-- Navegación basada en `NavigationStack`
-- Arquitectura preparada para navegación avanzada (siguiente/anterior Pokémon)
+## Arquitectura resumida
 
-## 📷 Capturas
-Pantalla inicial:
+- `Views`: pantallas y componentes visuales.
+- `ViewModels`: estado y coordinación de carga.
+- `PokemonRepository`: fachada principal para datos Pokémon.
+- `PokeAPIClient`: abstracción para el acceso a PokeAPI.
+- `Models`: modelos de dominio y modelos auxiliares.
 
-<img width="472" height="1055" alt="image" src="https://github.com/user-attachments/assets/56e80ecc-4398-41e6-9080-dd59c3a521e5" />
+Actualmente el proyecto usa recursos de PokeAPI para:
 
+- `pokemon`
+- `pokemon-species`
+- `evolution-chain`
+- `type`
 
-Vista de Region (Kanto):
+Y combina eso con contenido local curado para la sección de gimnasios.
 
+## Funcionalidades destacadas
 
-<img width="472" height="1055" alt="image" src="https://github.com/user-attachments/assets/e7c4743a-f7d5-4718-8611-cb46e0d75159" />
+### Regiones
 
+- listado principal desde Kanto hasta Paldea,
+- navegación por región,
+- grilla de Pokémon por rango regional,
+- búsqueda local dentro de cada región.
 
-Vista de detalle del pokemon:
+### Detalle del Pokémon
 
-<img width="472" height="1055" alt="image" src="https://github.com/user-attachments/assets/c81d71f9-518b-4ce3-9ad9-2c13d2b1811f" />
+- arte oficial,
+- tipos en español,
+- descripción Pokédex,
+- estadísticas base,
+- debilidades y resistencias,
+- cadena evolutiva navegable,
+- versión shiny,
+- formas especiales,
+- precarga del siguiente y anterior para mejorar la fluidez.
 
+### Gimnasios
 
----
+- regiones con listado de gimnasios,
+- detalle de cada líder,
+- especialidad e insignia,
+- equipo Pokémon con acceso a ficha individual.
 
-## 🧱 Arquitectura
+## Estado del proyecto
 
-- **SwiftUI**
-- **MVVM**
-- `ViewModels` separados por responsabilidad:
-  - Pokémon individual
-  - Pokémon por región
-  - Detalle y estadísticas
-- Componentes reutilizables:
-  - Cards
-  - Chips
-  - Secciones
-  - Barras de stats
-- Fondo Pokédex reutilizable (`PokedexBackground`)
+El proyecto ya tiene una base visual y funcional sólida, y está en una etapa ideal para seguir creciendo en tres direcciones:
 
----
+- performance,
+- contenido enciclopédico,
+- expansión de la arquitectura de datos.
 
-## 🛠️ Tecnologías utilizadas
+## Roadmap sugerido
 
-- Swift 5
-- SwiftUI
-- Combine
-- PokéAPI (https://pokeapi.co)
-- Async/Await
+- caché persistente en disco,
+- integración progresiva de una librería externa detrás de `PokeAPIClient`,
+- expansión hacia juegos, liga y contenido enciclopédico,
+- unificación visual del resto de pantallas con el nuevo lenguaje del detalle.
 
----
+## Cómo correrlo
 
-## 🔮 Próximas mejoras (Roadmap)
+1. Abrir `Pokedex-v1.1.xcodeproj` en Xcode.
+2. Seleccionar el scheme de la app.
+3. Ejecutar en Simulator o dispositivo iOS.
 
-- 🎮 Navegación avanzada tipo Pokédex:
-  - Swipe arriba/abajo → Pokémon anterior / siguiente
-  - Swipe izquierda/derecha → cambio de pantalla
-- 🏟️ Sección de **Gimnasios Pokémon**
-  - Gimnasios por región
-  - Líderes de gimnasio
-  - Pokémon de cada entrenador
-- ⚡ Optimización de carga (cache y requests paralelos)
-- 🎨 Más animaciones y feedback visual
-- 🔊 Sonidos clásicos de Pokédex
+La app requiere conexión a internet para cargar datos remotos desde PokeAPI.
 
----
+## Descripción sugerida para GitHub
 
-## 📌 Estado del proyecto
+Opciones cortas para la descripción del repo:
 
-🟢 **En desarrollo activo**  
-La base funcional y visual ya está completa.  
-Las próximas versiones se enfocarán en **navegación avanzada** y **contenido de entrenadores y gimnasios**.
+- `Pokédex en SwiftUI con regiones, evolución, shiny, formas especiales y gimnasios.`
+- `SwiftUI Pokédex para iOS con PokeAPI, fichas detalladas y base lista para crecer como enciclopedia.`
+- `Pokédex iOS en SwiftUI con búsqueda global, detalle avanzado y navegación por regiones.`
 
----
+## Documentación técnica
 
-## ▶️ Cómo ejecutar el proyecto
+Para una explicación más completa de la arquitectura, el flujo de datos y el roadmap técnico, ver:
 
-1. Clonar el repositorio:
-  git clone https://github.com/giaanu/Swift-Pokedex.git
-2. Abrir el proyecto en Xcode
-3. Seleccionar el simulador deseado o el dispositivo fisico.
-4. Ejecutar la aplicación
-
----
-
-## 👨‍💻 Autor
-
-Gianluca Zarrelli
-Estudiante de Desarrollo de Software
-
-📍 Buenos Aires, Argentina
-🔗 https://www.linkedin.com/in/gianlucazarrelli/
-
-Proyecto personal para aprendizaje y exploración de SwiftUI, arquitectura y diseño de interfaces complejas.
-
----
+[`DOCUMENTATION.md`](./DOCUMENTATION.md)

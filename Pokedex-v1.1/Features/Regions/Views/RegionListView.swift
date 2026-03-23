@@ -262,13 +262,19 @@ private struct SearchResult: Identifiable {
             types: [],
             sprites: PokemonSprites(
                 front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(id).png",
+                front_shiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/\(id).png",
                 other: OtherSprites(
                     officialArtwork: OfficialArtwork(
-                        front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png"
+                        front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png",
+                        front_shiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/\(id).png"
                     )
                 )
             ),
-            stats: []
+            stats: [],
+            species: PokemonSpeciesReference(
+                name: name,
+                url: "https://pokeapi.co/api/v2/pokemon-species/\(id)/"
+            )
         )
     }
 }

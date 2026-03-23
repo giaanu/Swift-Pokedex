@@ -25,7 +25,11 @@ struct PokemonDetailView: View {
                 TabView(selection: $selectedTab) {
 
                     // INFO
-                    PokemonInfoView(pokemon: displayPokemon)
+                    PokemonInfoView(
+                        pokemon: displayPokemon,
+                        supplementalData: viewModel.supplementalData,
+                        isLoadingSupplemental: viewModel.isLoadingSupplemental
+                    )
                         .tag(0)
 
                     // STATS
@@ -54,10 +58,15 @@ struct PokemonDetailView: View {
         }
         // 🔥 Carga debilidades/resistencias cada vez que cambia el Pokémon
         .task(id: pokemon.id) {
+            var currentPokemon = pokemon
+
             if shouldLoadFullPokemon {
                 await pokemonLoader.fetchPokemon(name: String(pokemon.id))
+                currentPokemon = pokemonLoader.pokemon ?? pokemon
             }
-            await viewModel.loadDamageRelations(for: displayPokemon)
+
+            await viewModel.loadDamageRelations(for: currentPokemon)
+            await viewModel.loadSupplementalData(for: currentPokemon)
         }
         .navigationBarBackButtonHidden(true)
         .modifier(EdgeSwipeBack(dismiss: dismiss.callAsFunction))

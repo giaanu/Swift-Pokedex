@@ -33,9 +33,7 @@ final class GlobalPokemonSearchViewModel: ObservableObject {
 
     private func fetchPokemon(id: Int) async {
         do {
-            let url = URL(string: "https://pokeapi.co/api/v2/pokemon/\(id)")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let pokemon = try JSONDecoder().decode(Pokemon.self, from: data)
+            let pokemon = try await PokemonRepository.shared.pokemon(id: id)
             results = [pokemon]
         } catch {
             results = []
@@ -44,9 +42,7 @@ final class GlobalPokemonSearchViewModel: ObservableObject {
 
     private func fetchPokemon(name: String) async {
         do {
-            let url = URL(string: "https://pokeapi.co/api/v2/pokemon/\(name)")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let pokemon = try JSONDecoder().decode(Pokemon.self, from: data)
+            let pokemon = try await PokemonRepository.shared.pokemon(name: name)
             results = [pokemon]
         } catch {
             results = []

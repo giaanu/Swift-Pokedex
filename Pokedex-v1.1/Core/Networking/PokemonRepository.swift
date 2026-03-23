@@ -8,20 +8,21 @@ struct PokemonIndexEntry: Sendable {
 actor PokemonRepository {
     static let shared = PokemonRepository()
 
+    private let client: any PokeAPIClient
     private var cachedIndex: [PokemonIndexEntry]?
     private var cachedPokemonByID: [Int: Pokemon] = [:]
+    private var cachedSupplementalByPokemonID: [Int: PokemonSupplementalData] = [:]
+
+    init(client: any PokeAPIClient = NativePokeAPIClient()) {
+        self.client = client
+    }
 
     func pokemonIndex() async throws -> [PokemonIndexEntry] {
         if let cachedIndex {
             return cachedIndex
         }
 
-        guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1025") else {
-            return []
-        }
-
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let decoded = try JSONDecoder().decode(PokemonIndexResponse.self, from: data)
+        let decoded = try await client.fetchPokemonIndex(limit: 1025)
 
         let index = decoded.results.compactMap { item -> PokemonIndexEntry? in
             guard let id = Self.pokemonID(from: item.url) else { return nil }
@@ -47,14 +48,7 @@ actor PokemonRepository {
             return cached
         }
 
-        guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon/\(query)") else {
-            throw URLError(.badURL)
-        }
-
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let pokemon = try await MainActor.run {
-            try JSONDecoder().decode(Pokemon.self, from: data)
-        }
+        let pokemon = try await client.fetchPokemon(name: query)
         cachedPokemonByID[pokemon.id] = pokemon
         return pokemon
     }
@@ -65,14 +59,7 @@ actor PokemonRepository {
             return cached
         }
 
-        guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon/\(id)") else {
-            throw URLError(.badURL)
-        }
-
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let pokemon = try await MainActor.run {
-            try JSONDecoder().decode(Pokemon.self, from: data)
-        }
+        let pokemon = try await client.fetchPokemon(id: id)
         cachedPokemonByID[id] = pokemon
         return pokemon
     }
@@ -92,6 +79,37 @@ actor PokemonRepository {
             }
     }
 
+    func supplementalData(for pokemon: Pokemon) async throws -> PokemonSupplementalData {
+        if let cached = cachedSupplementalByPokemonID[pokemon.id] {
+            return cached
+        }
+
+        let speciesURLString = pokemon.species?.url
+            ?? "https://pokeapi.co/api/v2/pokemon-species/\(pokemon.id)/"
+        guard let speciesURL = URL(string: speciesURLString) else {
+            throw URLError(.badURL)
+        }
+
+        let species = try await client.fetchSpecies(url: speciesURL)
+
+        let description = Self.cleanedFlavorText(from: species.flavor_text_entries)
+        let evolutionChain = try await fetchEvolutionChain(from: species.evolution_chain.url)
+        let specialForms = try await fetchSpecialForms(from: species.varieties, baseName: pokemon.name)
+        let shinyArtworkURL =
+            pokemon.sprites.other?.officialArtwork?.front_shiny
+            ?? pokemon.sprites.front_shiny
+
+        let supplemental = PokemonSupplementalData(
+            description: description,
+            evolutionChain: evolutionChain,
+            shinyArtworkURL: shinyArtworkURL,
+            specialForms: specialForms
+        )
+
+        cachedSupplementalByPokemonID[pokemon.id] = supplemental
+        return supplemental
+    }
+
     private static func placeholderPokemon(id: Int, name: String) -> Pokemon {
         Pokemon(
             id: id,
@@ -99,13 +117,19 @@ actor PokemonRepository {
             types: [],
             sprites: PokemonSprites(
                 front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(id).png",
+                front_shiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/\(id).png",
                 other: OtherSprites(
                     officialArtwork: OfficialArtwork(
-                        front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png"
+                        front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png",
+                        front_shiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/\(id).png"
                     )
                 )
             ),
-            stats: []
+            stats: [],
+            species: PokemonSpeciesReference(
+                name: name,
+                url: "https://pokeapi.co/api/v2/pokemon-species/\(id)/"
+            )
         )
     }
 
@@ -118,13 +142,94 @@ actor PokemonRepository {
         guard let value = components.last else { return nil }
         return Int(value)
     }
-}
 
-private struct PokemonIndexResponse: Decodable {
-    let results: [PokemonIndexItem]
-}
+    private func fetchEvolutionChain(from urlString: String) async throws -> [Pokemon] {
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
 
-private struct PokemonIndexItem: Decodable {
-    let name: String
-    let url: String
+        let response = try await client.fetchEvolutionChain(url: url)
+        let names = Self.flattenEvolutionChain(response.chain)
+
+        var pokemons: [Pokemon] = []
+        for name in names {
+            let pokemon = try await pokemon(name: name)
+            pokemons.append(pokemon)
+        }
+
+        return pokemons
+    }
+
+    private func fetchSpecialForms(
+        from varieties: [PokemonVariety],
+        baseName: String
+    ) async throws -> [PokemonSpecialForm] {
+        let supportedVarieties = varieties.filter {
+            !$0.is_default && Self.isSupportedSpecialForm($0.pokemon.name)
+        }
+
+        var forms: [PokemonSpecialForm] = []
+        for variety in supportedVarieties {
+            let pokemon = try await pokemon(name: variety.pokemon.name)
+            forms.append(
+                PokemonSpecialForm(
+                    title: Self.formattedSpecialFormTitle(
+                        from: variety.pokemon.name,
+                        baseName: baseName
+                    ),
+                    pokemon: pokemon
+                )
+            )
+        }
+
+        return forms
+    }
+
+    private static func flattenEvolutionChain(_ node: EvolutionChainLink) -> [String] {
+        var orderedNames: [String] = []
+        var visited = Set<String>()
+
+        func visit(_ current: EvolutionChainLink) {
+            if visited.insert(current.species.name).inserted {
+                orderedNames.append(current.species.name)
+            }
+
+            current.evolves_to.forEach(visit)
+        }
+
+        visit(node)
+        return orderedNames
+    }
+
+    private static func cleanedFlavorText(from entries: [FlavorTextEntry]) -> String? {
+        let preferredEntry = entries.reversed().first { $0.language.name == "en" }
+            ?? entries.first { $0.language.name == "en" }
+
+        return preferredEntry?.flavor_text
+            .replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\u{000C}", with: " ")
+            .replacingOccurrences(of: "  ", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func isSupportedSpecialForm(_ name: String) -> Bool {
+        name.contains("-mega") || name.hasSuffix("-gmax")
+    }
+
+    private static func formattedSpecialFormTitle(from name: String, baseName: String) -> String {
+        let trimmedName = name
+            .replacingOccurrences(of: "\(baseName)-", with: "")
+            .replacingOccurrences(of: "-", with: " ")
+            .capitalized
+
+        if trimmedName == "Gmax" {
+            return "Gigantamax"
+        }
+
+        if trimmedName.hasPrefix("Mega ") || trimmedName == "Mega" {
+            return trimmedName
+        }
+
+        return trimmedName
+    }
 }

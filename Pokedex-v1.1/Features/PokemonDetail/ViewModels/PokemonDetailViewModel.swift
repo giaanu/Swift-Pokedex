@@ -8,6 +8,8 @@ final class PokemonDetailViewModel: ObservableObject {
     @Published var weaknesses: [String] = []
     @Published var resistances: [String] = []
     @Published var isLoading = false
+    @Published var supplementalData: PokemonSupplementalData?
+    @Published var isLoadingSupplemental = false
     private static var typeRelationsCache: [String: DamageRelations] = [:]
 
     func loadDamageRelations(for pokemon: Pokemon) async {
@@ -62,6 +64,19 @@ final class PokemonDetailViewModel: ObservableObject {
 
         weaknesses = Array(weak).sorted()
         resistances = Array(resist).sorted()
+    }
+
+    func loadSupplementalData(for pokemon: Pokemon) async {
+        isLoadingSupplemental = true
+        supplementalData = nil
+
+        do {
+            supplementalData = try await PokemonRepository.shared.supplementalData(for: pokemon)
+        } catch {
+            print("❌ Error supplemental data:", error)
+        }
+
+        isLoadingSupplemental = false
     }
 }
 

@@ -105,13 +105,19 @@ private struct GymDetailView: View {
                 types: [],
                 sprites: PokemonSprites(
                     front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(gymPokemon.id).png",
+                    front_shiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/\(gymPokemon.id).png",
                     other: OtherSprites(
                         officialArtwork: OfficialArtwork(
-                            front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(gymPokemon.id).png"
+                            front_default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(gymPokemon.id).png",
+                            front_shiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/\(gymPokemon.id).png"
                         )
                     )
                 ),
-                stats: []
+                stats: [],
+                species: PokemonSpeciesReference(
+                    name: gymPokemon.name,
+                    url: "https://pokeapi.co/api/v2/pokemon-species/\(gymPokemon.id)/"
+                )
             )
         }
     }

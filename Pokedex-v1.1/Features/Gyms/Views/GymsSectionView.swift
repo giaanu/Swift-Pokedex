@@ -56,6 +56,10 @@ private struct GymRegionCard: View {
                 .font(DSTypography.sectionTitle)
                 .foregroundColor(DSColors.accent)
 
+            Text("Referencia: \(region.referenceGame)")
+                .font(.footnote.weight(.semibold))
+                .foregroundColor(DSColors.textSecondary)
+
             ForEach(region.gyms) { gym in
                 NavigationLink {
                     GymDetailView(gym: gym)
@@ -98,7 +102,7 @@ private struct GymDetailView: View {
     ]
 
     private var pokemons: [Pokemon] {
-        GymTeamBuilder.fullTeam(for: gym).map { gymPokemon in
+        gym.pokemons.map { gymPokemon in
             Pokemon(
                 id: gymPokemon.id,
                 name: gymPokemon.name,

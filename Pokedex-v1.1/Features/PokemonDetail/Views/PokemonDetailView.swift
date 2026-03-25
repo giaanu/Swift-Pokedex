@@ -10,16 +10,16 @@ struct PokemonDetailView: View {
 
     @State private var selectedTab = 0
     @StateObject private var viewModel = PokemonDetailViewModel()
-    @StateObject private var pokemonLoader = PokemonViewModel()
 
     private var displayPokemon: Pokemon {
-        pokemonLoader.pokemon ?? pokemon
+        viewModel.pokemon ?? pokemon
     }
 
     var body: some View {
 
         PokedexBackground {
-            VStack {
+            VStack(spacing: 18) {
+                detailHeader
 
                 // ===== CONTENIDO =====
                 TabView(selection: $selectedTab) {
@@ -28,7 +28,7 @@ struct PokemonDetailView: View {
                     PokemonInfoView(
                         pokemon: displayPokemon,
                         supplementalData: viewModel.supplementalData,
-                        isLoadingSupplemental: viewModel.isLoadingSupplemental
+                        isLoadingSupplemental: viewModel.isLoading
                     )
                         .tag(0)
 
@@ -46,27 +46,19 @@ struct PokemonDetailView: View {
                 // ===== INDICADOR =====
                 HStack(spacing: 8) {
                     Circle()
-                        .fill(selectedTab == 0 ? .blue : .gray.opacity(0.4))
+                        .fill(selectedTab == 0 ? DSColors.accentStrong : .white.opacity(0.35))
                         .frame(width: 8, height: 8)
 
                     Circle()
-                        .fill(selectedTab == 1 ? .blue : .gray.opacity(0.4))
+                        .fill(selectedTab == 1 ? DSColors.accentStrong : .white.opacity(0.35))
                         .frame(width: 8, height: 8)
                 }
-                .padding(.bottom, 20)
+                .padding(.bottom, 18)
             }
         }
         // 🔥 Carga debilidades/resistencias cada vez que cambia el Pokémon
         .task(id: pokemon.id) {
-            var currentPokemon = pokemon
-
-            if shouldLoadFullPokemon {
-                await pokemonLoader.fetchPokemon(name: String(pokemon.id))
-                currentPokemon = pokemonLoader.pokemon ?? pokemon
-            }
-
-            await viewModel.loadDamageRelations(for: currentPokemon)
-            await viewModel.loadSupplementalData(for: currentPokemon)
+            await viewModel.loadDetails(for: pokemon)
         }
         .navigationBarBackButtonHidden(true)
         .modifier(EdgeSwipeBack(dismiss: dismiss.callAsFunction))
@@ -96,12 +88,25 @@ struct PokemonDetailView: View {
         )
     }
 
-    private var shouldLoadFullPokemon: Bool {
-        if pokemon.types.isEmpty || pokemon.stats.isEmpty {
-            return true
-        }
+    private var detailHeader: some View {
+        HStack {
+            Spacer()
 
-        let artwork = pokemon.sprites.other?.officialArtwork?.front_default
-        return artwork == nil && pokemon.sprites.front_default == nil
+            Text(selectedTab == 0 ? "Información" : "Estadísticas")
+                .font(.caption.bold())
+                .foregroundColor(.white.opacity(0.88))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(Color.white.opacity(0.18))
+                        .overlay(
+                            Capsule()
+                                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                        )
+                )
+        }
+        .padding(.horizontal, 22)
+        .padding(.top, 20)
     }
 }

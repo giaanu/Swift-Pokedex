@@ -51,8 +51,7 @@ struct PokemonStatsView: View {
 
     private var statsSection: some View {
         VStack(spacing: 14) {
-
-            Text("STATS BASE")
+            Text("ESTADÍSTICAS BASE")
                 .font(DSTypography.statsTitle)
                 .foregroundColor(DSColors.textPrimary)
                 .padding(.horizontal, 10)
@@ -86,14 +85,6 @@ struct PokemonStatsView: View {
     // MARK: - Helpers
 
     private func statLabel(_ raw: String) -> String {
-        switch raw {
-        case "hp": return "HP"
-        case "attack": return "ATTACK"
-        case "defense": return "DEFENSE"
-        case "special-attack": return "SPECIAL ATTACK"
-        case "special-defense": return "SPECIAL DEFENSE"
-        case "speed": return "SPEED"
-        default: return raw.uppercased()
-        }
+        PokemonDisplayText.localizedStat(raw).uppercased()
     }
 }

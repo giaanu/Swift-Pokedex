@@ -6,6 +6,7 @@ protocol PokeAPIClient: Sendable {
     func fetchPokemon(id: Int) async throws -> Pokemon
     func fetchSpecies(url: URL) async throws -> PokemonSpeciesResponse
     func fetchEvolutionChain(url: URL) async throws -> EvolutionChainResponse
+    func fetchType(url: URL) async throws -> TypeResponse
 }
 
 struct PokeAPIIndexResponse: Decodable {

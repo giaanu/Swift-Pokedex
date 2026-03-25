@@ -7,11 +7,13 @@ struct PokemonIndexEntry: Sendable {
 
 actor PokemonRepository {
     static let shared = PokemonRepository()
+    private static let indexedPokemonRange = 1...1025
 
     private let client: any PokeAPIClient
     private var cachedIndex: [PokemonIndexEntry]?
     private var cachedPokemonByID: [Int: Pokemon] = [:]
     private var cachedSupplementalByPokemonID: [Int: PokemonSupplementalData] = [:]
+    private var cachedDamageRelationsByTypeURL: [String: DamageRelations] = [:]
 
     init(client: any PokeAPIClient = NativePokeAPIClient()) {
         self.client = client
@@ -110,6 +112,34 @@ actor PokemonRepository {
         return supplemental
     }
 
+    func damageRelations(for pokemon: Pokemon) async throws -> [DamageRelations] {
+        var relations: [DamageRelations] = []
+
+        for entry in pokemon.types {
+            if let cached = cachedDamageRelationsByTypeURL[entry.type.url] {
+                relations.append(cached)
+                continue
+            }
+
+            guard let url = URL(string: entry.type.url) else { continue }
+            let response = try await client.fetchType(url: url)
+            cachedDamageRelationsByTypeURL[entry.type.url] = response.damage_relations
+            relations.append(response.damage_relations)
+        }
+
+        return relations
+    }
+
+    func prefetchAdjacentDetails(around id: Int) async {
+        let previousID = id - 1
+        let nextID = id + 1
+
+        async let previousPrefetch: Void = prefetchDetailIfNeeded(id: previousID)
+        async let nextPrefetch: Void = prefetchDetailIfNeeded(id: nextID)
+
+        _ = await (previousPrefetch, nextPrefetch)
+    }
+
     private static func placeholderPokemon(id: Int, name: String) -> Pokemon {
         Pokemon(
             id: id,
@@ -202,7 +232,9 @@ actor PokemonRepository {
     }
 
     private static func cleanedFlavorText(from entries: [FlavorTextEntry]) -> String? {
-        let preferredEntry = entries.reversed().first { $0.language.name == "en" }
+        let preferredEntry = entries.reversed().first { $0.language.name == "es" }
+            ?? entries.first { $0.language.name == "es" }
+            ?? entries.reversed().first { $0.language.name == "en" }
             ?? entries.first { $0.language.name == "en" }
 
         return preferredEntry?.flavor_text
@@ -231,5 +263,18 @@ actor PokemonRepository {
         }
 
         return trimmedName
+    }
+
+    private func prefetchDetailIfNeeded(id: Int) async {
+        guard Self.indexedPokemonRange.contains(id) else { return }
+
+        do {
+            let pokemon = try await pokemon(id: id)
+            async let supplemental: PokemonSupplementalData = supplementalData(for: pokemon)
+            async let relations: [DamageRelations] = damageRelations(for: pokemon)
+            _ = try await (supplemental, relations)
+        } catch {
+            // Ignore prefetch errors to avoid affecting the current detail flow.
+        }
     }
 }

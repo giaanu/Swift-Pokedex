@@ -5,7 +5,7 @@ struct TypeChip: View {
     let type: String
 
     var body: some View {
-        Text(type.capitalized)
+        Text(PokemonDisplayText.localizedType(type))
             .font(.caption.bold())
             .foregroundColor(.white)
             .padding(.horizontal, 10)

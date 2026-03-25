@@ -64,7 +64,7 @@ struct PokemonSearchView: View {
                         .bold()
 
                     ForEach(pokemon.types, id: \.slot) { entry in
-                        Text(entry.type.name.capitalized)
+                        Text(PokemonDisplayText.localizedType(entry.type.name))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(Color.blue.opacity(0.2))

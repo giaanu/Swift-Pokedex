@@ -4,6 +4,7 @@ import Foundation
 enum HomeSection {
     case pokedex
     case gyms
+    case games
 }
 
 struct RegionListView: View {
@@ -64,6 +65,12 @@ struct RegionListView: View {
                 pokedexContent
             case .gyms:
                 GymsSectionView {
+                    withAnimation {
+                        isMenuOpen = true
+                    }
+                }
+            case .games:
+                GamesSectionView {
                     withAnimation {
                         isMenuOpen = true
                     }
@@ -188,6 +195,10 @@ struct RegionListView: View {
 
             menuItem(title: "Gimnasios", isSelected: selectedSection == .gyms) {
                 selectedSection = .gyms
+            }
+
+            menuItem(title: "Juegos", isSelected: selectedSection == .games) {
+                selectedSection = .games
             }
 
             Spacer()

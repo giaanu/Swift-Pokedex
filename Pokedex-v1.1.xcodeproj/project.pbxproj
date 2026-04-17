@@ -35,6 +35,16 @@
 			path = "Pokedex-v1.1";
 			sourceTree = "<group>";
 		};
+		AA55AA112EED1B3500A0D288 /* Pokedex-v1.1Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Pokedex-v1.1Tests";
+			sourceTree = "<group>";
+		};
+		AA55AA122EED1B3500A0D288 /* Pokedex-v1.1UITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Pokedex-v1.1UITests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +76,8 @@
 			isa = PBXGroup;
 			children = (
 				99D8ADBB2EED1B3500A0D288 /* Pokedex-v1.1 */,
+				AA55AA112EED1B3500A0D288 /* Pokedex-v1.1Tests */,
+				AA55AA122EED1B3500A0D288 /* Pokedex-v1.1UITests */,
 				99D8ADBA2EED1B3500A0D288 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -118,6 +130,9 @@
 			dependencies = (
 				99D8ADC82EED1B3500A0D288 /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				AA55AA112EED1B3500A0D288 /* Pokedex-v1.1Tests */,
+			);
 			name = "Pokedex-v1.1Tests";
 			packageProductDependencies = (
 			);
@@ -137,6 +152,9 @@
 			);
 			dependencies = (
 				99D8ADD22EED1B3500A0D288 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				AA55AA122EED1B3500A0D288 /* Pokedex-v1.1UITests */,
 			);
 			name = "Pokedex-v1.1UITests";
 			packageProductDependencies = (

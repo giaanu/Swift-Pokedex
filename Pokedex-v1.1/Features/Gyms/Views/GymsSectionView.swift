@@ -21,29 +21,11 @@ struct GymsSectionView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top) {
-            Button(action: onMenuTap) {
-                Image(systemName: "line.3.horizontal")
-                    .font(DSTypography.menuIcon)
-                    .foregroundColor(.white)
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(DSColors.accentStrong))
-            }
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 4) {
-                Text("GIMNASIOS")
-                    .font(DSTypography.screenTitle)
-                    .foregroundColor(DSColors.textPrimary)
-
-                Text("Regiones, lideres y equipos")
-                    .font(DSTypography.screenSubtitle)
-                    .foregroundColor(DSColors.accent)
-            }
-        }
-        .padding(.top, DSSpacing.sectionTop)
-        .padding(.horizontal, DSSpacing.xLarge)
+        ScreenHeader(
+            title: "GIMNASIOS",
+            subtitle: "Regiones, lideres y equipos",
+            onMenuTap: onMenuTap
+        )
     }
 }
 

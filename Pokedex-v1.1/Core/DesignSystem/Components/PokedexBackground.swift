@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct PokedexBackground<Content: View>: View {
+    var accentColor: Color?
     let content: Content
 
-    init(@ViewBuilder content: () -> Content) {
+    init(accentColor: Color? = nil, @ViewBuilder content: () -> Content) {
+        self.accentColor = accentColor
         self.content = content()
     }
 
@@ -33,13 +35,15 @@ struct PokedexBackground<Content: View>: View {
                         .blur(radius: 10)
                         .offset(x: width * 0.36, y: -height * 0.18)
 
+                    // Tinted with type color when provided
                     Circle()
                         .fill(
-                            Color(red: 0.97, green: 0.70, blue: 0.25).opacity(0.18)
+                            (accentColor ?? Color(red: 0.97, green: 0.70, blue: 0.25)).opacity(0.22)
                         )
                         .frame(width: width * 0.62)
                         .blur(radius: 18)
                         .offset(x: -width * 0.34, y: height * 0.08)
+                        .animation(.easeInOut(duration: 0.6), value: accentColor?.description)
 
                     RoundedRectangle(cornerRadius: 220)
                         .fill(Color.white.opacity(0.16))
@@ -93,7 +97,7 @@ struct PokedexBackground<Content: View>: View {
                 startPoint: .top,
                 endPoint: .bottom
             )
-                .ignoresSafeArea()
+            .ignoresSafeArea()
 
             content
         }

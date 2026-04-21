@@ -15,16 +15,21 @@ struct PokemonDetailView: View {
         viewModel.pokemon ?? pokemon
     }
 
+    private var primaryTypeColor: Color? {
+        guard let typeName = displayPokemon.types.sorted(by: { $0.slot < $1.slot }).first?.type.name else {
+            return nil
+        }
+        return PokemonTypeColor.color(for: typeName)
+    }
+
     var body: some View {
 
-        PokedexBackground {
+        PokedexBackground(accentColor: primaryTypeColor) {
             VStack(spacing: 18) {
                 detailHeader
 
-                // ===== CONTENIDO =====
                 TabView(selection: $selectedTab) {
 
-                    // INFO
                     PokemonInfoView(
                         pokemon: displayPokemon,
                         supplementalData: viewModel.supplementalData,
@@ -32,7 +37,6 @@ struct PokemonDetailView: View {
                     )
                         .tag(0)
 
-                    // STATS
                     PokemonStatsView(
                         pokemon: displayPokemon,
                         weaknesses: viewModel.weaknesses,
@@ -43,7 +47,6 @@ struct PokemonDetailView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: selectedTab)
 
-                // ===== INDICADOR =====
                 HStack(spacing: 8) {
                     Circle()
                         .fill(selectedTab == 0 ? DSColors.accentStrong : .white.opacity(0.35))
@@ -56,13 +59,11 @@ struct PokemonDetailView: View {
                 .padding(.bottom, 18)
             }
         }
-        // 🔥 Carga debilidades/resistencias cada vez que cambia el Pokémon
         .task(id: pokemon.id) {
             await viewModel.loadDetails(for: pokemon)
         }
         .navigationBarBackButtonHidden(true)
         .modifier(EdgeSwipeBack(dismiss: dismiss.callAsFunction))
-        // Gestos
         .gesture(
             DragGesture(minimumDistance: 20)
                 .onEnded { value in
@@ -70,14 +71,12 @@ struct PokemonDetailView: View {
                     let v = value.translation.height
 
                     if abs(h) > abs(v) {
-                        // 👉 HORIZONTAL: cambia de Pokémon
                         if h < -50 {
                             onNextPokemon()
                         } else if h > 50 {
                             onPreviousPokemon()
                         }
                     } else {
-                        // 👉 VERTICAL: cambia de tab
                         if v < -50 {
                             withAnimation { selectedTab = 1 }
                         } else if v > 50 {

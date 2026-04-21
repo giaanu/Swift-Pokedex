@@ -134,7 +134,7 @@ struct PokemonInfoView: View {
                             .tracking(1.3)
 
                         Text(pokemon.name.capitalized)
-                            .font(.system(size: 34, weight: .black, design: .rounded))
+                            .font(DSTypography.pokemonName)
                             .foregroundColor(.black.opacity(0.86))
 
                         Text(String(format: "#%04d", pokemon.id))

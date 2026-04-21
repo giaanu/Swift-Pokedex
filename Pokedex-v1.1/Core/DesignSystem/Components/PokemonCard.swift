@@ -7,12 +7,10 @@ struct PokemonCard: View {
     var body: some View {
         VStack(spacing: 10) {
 
-            // ===== NÚMERO =====
-            Text("#\(pokemon.id)")
-                .font(.caption)
+            Text(String(format: "#%04d", pokemon.id))
+                .font(.system(.caption, design: .rounded).weight(.semibold))
                 .foregroundColor(.secondary)
 
-            // ===== IMAGEN =====
             AsyncImage(url: imageURL) { image in
                 image
                     .resizable()
@@ -22,9 +20,8 @@ struct PokemonCard: View {
             }
             .frame(height: 90)
 
-            // ===== NOMBRE =====
             Text(pokemon.name.capitalized)
-                .font(.headline)
+                .font(.system(.headline, design: .rounded).weight(.bold))
                 .foregroundColor(.black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.85)
@@ -33,16 +30,14 @@ struct PokemonCard: View {
         .frame(height: 180)
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 18)
+            RoundedRectangle(cornerRadius: DSSpacing.cornerMedium)
                 .fill(Color.white.opacity(0.18))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 18)
-                        .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: DSSpacing.cornerMedium)
+                        .stroke(Color.white.opacity(0.22), lineWidth: 1)
                 )
         )
     }
-
-    // MARK: - Helpers
 
     private var imageURL: URL? {
         if let url = pokemon.sprites.other?.officialArtwork?.front_default {

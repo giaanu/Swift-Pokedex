@@ -4,8 +4,9 @@ enum DSColors {
     static let textPrimary = Color.black
     static let textSecondary = Color.secondary
 
-    static let accent = Color.blue
-    static let accentStrong = Color.blue.opacity(0.9)
+    // Warm amber accent — harmonizes with the burgundy/beige gradient
+    static let accent = Color(red: 0.97, green: 0.68, blue: 0.18)
+    static let accentStrong = Color(red: 0.92, green: 0.56, blue: 0.10)
 
     static let menuScrim = Color.black.opacity(0.35)
 

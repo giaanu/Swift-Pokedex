@@ -16,4 +16,10 @@ enum DSTypography {
 
     static let statsTitle: Font = .system(size: 22, weight: .bold)
     static let cardTitle: Font = .footnote.bold()
+
+    // Rounded variants — for names, numbers, stat values
+    static let pokemonName: Font = .system(size: 34, weight: .black, design: .rounded)
+    static let statValue: Font = .system(size: 14, weight: .bold, design: .rounded)
+    static let statName: Font = .system(size: 14, weight: .semibold, design: .default)
+    static let numberLabel: Font = .system(size: 14, weight: .semibold, design: .rounded)
 }

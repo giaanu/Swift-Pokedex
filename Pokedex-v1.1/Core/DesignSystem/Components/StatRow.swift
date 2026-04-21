@@ -13,35 +13,32 @@ struct StatRow: View {
     var body: some View {
         HStack(spacing: 10) {
 
-            // Nombre del stat
             Text(name)
-                .font(.system(size: 14, weight: .semibold))
+                .font(DSTypography.statName)
                 .foregroundColor(.black)
                 .frame(width: 120, alignment: .leading)
 
-            // Barra
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
 
                     Capsule()
-                        .fill(Color.black.opacity(0.18))
+                        .fill(Color.black.opacity(0.12))
                         .frame(height: 6)
 
                     Capsule()
-                        .fill(Color.green)
+                        .fill(barColor)
                         .frame(
                             width: geo.size.width * progress,
                             height: 6
                         )
-                        // ✨ GLOW
                         .shadow(
-                            color: showGlow ? Color.green.opacity(0.9) : .clear,
+                            color: showGlow ? barColor.opacity(0.85) : .clear,
                             radius: showGlow ? 6 : 0
                         )
                         .overlay(
                             Capsule()
                                 .stroke(
-                                    Color.green.opacity(showGlow ? 0.9 : 0),
+                                    barColor.opacity(showGlow ? 0.9 : 0),
                                     lineWidth: 1
                                 )
                         )
@@ -49,9 +46,8 @@ struct StatRow: View {
             }
             .frame(height: 6)
 
-            // Valor numérico
             Text("\(value)")
-                .font(.system(size: 14, weight: .bold))
+                .font(DSTypography.statValue)
                 .foregroundColor(.black)
                 .frame(width: 32, alignment: .trailing)
         }
@@ -64,7 +60,13 @@ struct StatRow: View {
         }
     }
 
-    // MARK: - Animation Logic
+    private var barColor: Color {
+        switch value {
+        case ..<50:  return Color(red: 0.95, green: 0.35, blue: 0.25)
+        case 50..<80: return Color(red: 0.97, green: 0.70, blue: 0.18)
+        default:     return Color(red: 0.35, green: 0.75, blue: 0.40)
+        }
+    }
 
     private func runAnimation() {
         guard animate else {
@@ -81,11 +83,9 @@ struct StatRow: View {
                 progress = min(CGFloat(value) / 120.0, 1.0)
             }
 
-            // ✨ Glow al finalizar
             DispatchQueue.main.asyncAfter(deadline: .now() + delay + 0.6) {
                 showGlow = true
 
-                // Fade out del glow
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     withAnimation(.easeOut(duration: 0.4)) {
                         showGlow = false

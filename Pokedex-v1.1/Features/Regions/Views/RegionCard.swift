@@ -4,29 +4,34 @@ struct RegionCard: View {
     let region: Region
 
     var body: some View {
-        HStack {
+        HStack(spacing: 14) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(DSColors.accent)
+                .frame(width: 3)
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(region.name.uppercased())
                     .font(DSTypography.sectionTitle)
-                    .foregroundColor(DSColors.accent)
+                    .foregroundColor(DSColors.textPrimary)
 
-                Text("\(region.pokedexRange.lowerBound)–\(region.pokedexRange.upperBound)")
-                    .font(.caption.bold())
-                    .foregroundColor(DSColors.accent)
+                Text("#\(region.pokedexRange.lowerBound) – #\(region.pokedexRange.upperBound)")
+                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .foregroundColor(DSColors.textSecondary)
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .foregroundColor(DSColors.textSecondary)
+                .font(.caption.bold())
+                .foregroundColor(DSColors.accent)
         }
-        .padding()
+        .padding(.vertical, 14)
+        .padding(.horizontal, 16)
         .background(
-            // 👇 material sin bordes visibles
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: DSSpacing.cornerMedium)
                 .fill(.ultraThinMaterial)
-                .opacity(0.7)
+                .opacity(0.82)
         )
-        .shadow(color: DSColors.menuScrim.opacity(0.52), radius: 6, x: 0, y: 3)
+        .shadow(color: DSColors.accentStrong.opacity(0.18), radius: 6, x: 0, y: 3)
     }
 }

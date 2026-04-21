@@ -92,7 +92,7 @@ struct RegionListView: View {
                     .autocorrectionDisabled(true)
                     .focused($isSearchFieldFocused)
                     .background(
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: DSSpacing.cornerSmall)
                             .fill(DSColors.searchFieldBackground)
                     )
                     .padding(.horizontal, DSSpacing.xLarge)
@@ -112,7 +112,7 @@ struct RegionListView: View {
                                     .foregroundColor(DSColors.textPrimary)
                                     .padding()
                                     .background(
-                                        RoundedRectangle(cornerRadius: 12)
+                                        RoundedRectangle(cornerRadius: DSSpacing.cornerSmall)
                                             .fill(DSColors.resultRowBackground)
                                     )
                             }
@@ -150,37 +150,15 @@ struct RegionListView: View {
     }
 
     private var pokedexHeader: some View {
-        HStack(alignment: .top) {
-            menuButton
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 4) {
-                Text("POKEDEX")
-                    .font(DSTypography.screenTitle)
-                    .foregroundColor(DSColors.textPrimary)
-
-                Text("Selecciona una region")
-                    .font(DSTypography.screenSubtitle)
-                    .foregroundColor(DSColors.accent)
+        ScreenHeader(
+            title: "POKEDEX",
+            subtitle: "Selecciona una region",
+            onMenuTap: {
+                withAnimation {
+                    isMenuOpen = true
+                }
             }
-        }
-        .padding(.top, DSSpacing.sectionTop)
-        .padding(.horizontal, DSSpacing.xLarge)
-    }
-
-    private var menuButton: some View {
-        Button {
-            withAnimation {
-                isMenuOpen = true
-            }
-        } label: {
-            Image(systemName: "line.3.horizontal")
-                .font(DSTypography.menuIcon)
-                .foregroundColor(.white)
-                .frame(width: 44, height: 44)
-                .background(Circle().fill(DSColors.accentStrong))
-        }
+        )
     }
 
     private var sideMenu: some View {

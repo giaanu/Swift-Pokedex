@@ -20,14 +20,18 @@ struct PokemonGridCard: View {
             }
 
             Text(pokemon.name.capitalized)
-                .font(DSTypography.cardTitle)
+                .font(.system(.footnote, design: .rounded).bold())
                 .foregroundColor(DSColors.textPrimary)
                 .lineLimit(1)
         }
         .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: DSSpacing.cornerMedium)
                 .fill(DSColors.glassMedium.opacity(1.0))
+                .overlay(
+                    RoundedRectangle(cornerRadius: DSSpacing.cornerMedium)
+                        .stroke(DSColors.glassBorderSoft, lineWidth: 1)
+                )
         )
     }
 

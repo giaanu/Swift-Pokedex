@@ -1,28 +1,23 @@
 import SwiftUI
 
+enum TypeBadgeSize {
+    case small
+    case medium
+}
+
 struct TypeChip: View {
 
     let type: String
+    var size: TypeBadgeSize = .small
 
     var body: some View {
         Text(PokemonDisplayText.localizedType(type))
-            .font(.caption.bold())
+            .font(size == .small ? .caption.bold() : .system(size: 14, weight: .bold))
             .foregroundColor(.white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .background(typeColor.opacity(0.9))
+            .padding(.horizontal, size == .small ? 10 : 14)
+            .padding(.vertical, size == .small ? 4 : 6)
+            .background(PokemonTypeColor.color(for: type).opacity(0.92))
             .clipShape(Capsule())
-    }
-
-    private var typeColor: Color {
-        switch type {
-        case "fire": return .red
-        case "water": return .blue
-        case "grass": return .green
-        case "electric": return .yellow
-        case "poison": return .purple
-        case "flying": return .indigo
-        default: return .gray
-        }
+            .shadow(color: PokemonTypeColor.color(for: type).opacity(0.35), radius: 4, x: 0, y: 2)
     }
 }

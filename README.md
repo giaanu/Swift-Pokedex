@@ -102,14 +102,6 @@ El proyecto ya tiene una base visual y funcional sólida, y está en una etapa i
 
 La app requiere conexión a internet para cargar datos remotos desde PokeAPI.
 
-## Descripción sugerida para GitHub
-
-Opciones cortas para la descripción del repo:
-
-- `Pokédex en SwiftUI con regiones, evolución, shiny, formas especiales y gimnasios.`
-- `SwiftUI Pokédex para iOS con PokeAPI, fichas detalladas y base lista para crecer como enciclopedia.`
-- `Pokédex iOS en SwiftUI con búsqueda global, detalle avanzado y navegación por regiones.`
-
 ## Documentación técnica
 
 Para una explicación más completa de la arquitectura, el flujo de datos y el roadmap técnico, ver:

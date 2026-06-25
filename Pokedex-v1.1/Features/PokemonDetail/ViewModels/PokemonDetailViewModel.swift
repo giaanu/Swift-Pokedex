@@ -1,15 +1,15 @@
 import SwiftUI
 import Foundation
-import Combine
+import Observation
 
 @MainActor
-final class PokemonDetailViewModel: ObservableObject {
+@Observable final class PokemonDetailViewModel {
 
-    @Published var pokemon: Pokemon?
-    @Published var weaknesses: [String] = []
-    @Published var resistances: [String] = []
-    @Published var isLoading = false
-    @Published var supplementalData: PokemonSupplementalData?
+    var pokemon: Pokemon?
+    var weaknesses: [String] = []
+    var resistances: [String] = []
+    var isLoading = false
+    var supplementalData: PokemonSupplementalData?
 
     func loadDetails(for basePokemon: Pokemon) async {
         isLoading = true

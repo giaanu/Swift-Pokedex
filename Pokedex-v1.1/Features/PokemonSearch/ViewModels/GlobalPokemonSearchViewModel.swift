@@ -1,11 +1,11 @@
 import Foundation
-import Combine
+import Observation
 
 @MainActor
-final class GlobalPokemonSearchViewModel: ObservableObject {
+@Observable final class GlobalPokemonSearchViewModel {
 
-    @Published var results: [Pokemon] = []
-    @Published var isLoading = false
+    var results: [Pokemon] = []
+    var isLoading = false
 
     func search(text: String) async {
         let query = text

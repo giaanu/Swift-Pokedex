@@ -7,8 +7,7 @@ struct RegionDetailView: View {
     @Environment(\.dismiss) private var dismiss
 
     let region: Region
-    @StateObject private var viewModel = RegionPokemonViewModel()
-    @State private var searchText = ""
+    @State private var viewModel = RegionPokemonViewModel()
 
     // 👉 3 columnas
     private let columns = [
@@ -16,21 +15,6 @@ struct RegionDetailView: View {
         GridItem(.flexible(), spacing: 14),
         GridItem(.flexible(), spacing: 14)
     ]
-
-    private var filteredPokemons: [Pokemon] {
-        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        // si querés guard de 2 caracteres también acá:
-        if trimmed.count < 2 { return viewModel.pokemons }
-
-        if let id = Int(trimmed) {
-            return viewModel.pokemons.filter { $0.id == id }
-        }
-
-        return viewModel.pokemons.filter {
-            $0.name.localizedCaseInsensitiveContains(trimmed)
-        }
-    }
 
     var body: some View {
 
@@ -53,7 +37,7 @@ struct RegionDetailView: View {
                     .padding(.bottom, 10)
 
                     // 🔍 Buscador región
-                    TextField("Buscar en \(region.name)...", text: $searchText)
+                    TextField("Buscar en \(region.name)...", text: $viewModel.searchText)
                         .padding(12)
                         .foregroundStyle(.black)
                         .tint(.blue)
@@ -73,7 +57,7 @@ struct RegionDetailView: View {
 
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 14) {
-                            ForEach(filteredPokemons, id: \.id) { pokemon in
+                            ForEach(viewModel.filteredPokemons, id: \.id) { pokemon in
                                 NavigationLink {
                                     PokemonDetailView(
                                         pokemon: pokemon,

@@ -4,15 +4,15 @@
 //
 //  Created by Gianluca Zarrelli on 09/12/2025.
 //
-import Combine
+import Observation
 import Foundation
 
 @MainActor
-class PokemonViewModel: ObservableObject {
+@Observable class PokemonViewModel {
     
-    @Published var pokemon: Pokemon?
-    @Published var isLoading = false
-    @Published var errorMessage: String?
+    var pokemon: Pokemon?
+    var isLoading = false
+    var errorMessage: String?
     
     func fetchPokemon(name: String) async {
         isLoading = true

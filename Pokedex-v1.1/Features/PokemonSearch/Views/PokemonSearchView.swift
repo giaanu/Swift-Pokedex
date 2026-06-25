@@ -2,7 +2,7 @@ import SwiftUI
 import Foundation
 
 struct PokemonSearchView: View {
-    @StateObject var viewModel = PokemonViewModel()
+    @State private var viewModel = PokemonViewModel()
     @State private var searchText = ""
     
     var body: some View {

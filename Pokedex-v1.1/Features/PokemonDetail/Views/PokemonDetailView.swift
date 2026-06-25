@@ -9,7 +9,7 @@ struct PokemonDetailView: View {
     let onPreviousPokemon: () -> Void
 
     @State private var selectedTab = 0
-    @StateObject private var viewModel = PokemonDetailViewModel()
+    @State private var viewModel = PokemonDetailViewModel()
 
     private var displayPokemon: Pokemon {
         viewModel.pokemon ?? pokemon
